@@ -212,8 +212,3 @@ O que foi feito para o sistema não poder ser burlado, mesmo por quem mexe no na
 - **Cookie de sessão** HttpOnly e SameSite, sessão expira em 30 minutos, upload de arquivos desligado.
 - Thymeleaf escapa todo texto exibido (proteção contra XSS) e o JPA usa parâmetros (sem SQL injection).
 - Botões de envio são desativados após o primeiro clique, evitando registro duplicado.
-
-## Ideias para evoluir
-
-Tela para o gerente criar e desativar usuários e trocar senha, peças e estoque nas ordens, desconto e formas de
-pagamento, impressão da ordem em PDF, API REST para um aplicativo mobile.
