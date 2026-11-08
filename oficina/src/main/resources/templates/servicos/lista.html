@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Serviços')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('servicos')}"></header>
+
+<main class="conteudo">
+    <div th:replace="~{fragments/layout :: mensagens}"></div>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Catálogo de serviços</h1>
+            <p class="subtitulo">Serviços e preços que podem entrar nas ordens</p>
+        </div>
+        <a class="botao primario" th:href="@{/servicos/novo}">Novo serviço</a>
+    </div>
+
+    <p class="vazio" th:if="${servicos.isEmpty()}">
+        Nenhum serviço cadastrado.
+        <a th:href="@{/servicos/novo}">Cadastrar um serviço</a>
+    </p>
+
+    <div class="tabela-caixa" th:unless="${servicos.isEmpty()}">
+        <table class="tabela">
+            <thead>
+            <tr>
+                <th>Serviço</th>
+                <th>Descrição</th>
+                <th class="num">Preço</th>
+                <th>Situação</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${servicos}">
+                <td data-label="Serviço" th:text="${s.nome}">Serviço</td>
+                <td data-label="Descrição" th:text="${s.descricao != null} ? ${s.descricao} : '-'">-</td>
+                <td data-label="Preço" class="num" th:text="'R$ ' + ${#numbers.formatDecimal(s.preco, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                <td data-label="Situação">
+                    <span th:if="${s.ativo}">Ativo</span>
+                    <span class="etiqueta-inativo" th:unless="${s.ativo}">Inativo</span>
+                </td>
+                <td class="acoes">
+                    <a class="botao pequeno" th:href="@{/servicos/{id}/editar(id=${s.id})}">Editar</a>
+                    <form th:action="@{/servicos/{id}/excluir(id=${s.id})}" method="post"
+                          data-confirmar="Excluir este serviço?">
+                        <button class="botao pequeno perigo" type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

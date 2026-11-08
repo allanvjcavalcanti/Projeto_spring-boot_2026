@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Entrar')}"></head>
+<body class="pagina-login">
+<main class="login">
+    <h1 class="marca-login">Oficina<strong>Fácil</strong></h1>
+    <p class="subtitulo">Entre com seu usuário e senha</p>
+
+    <p class="alerta erro" role="alert" th:if="${param.erro != null}">
+        Usuário ou senha inválidos. Depois de 5 erros seguidos o acesso é bloqueado por 10 minutos.
+    </p>
+    <p class="alerta sucesso" role="status" th:if="${param.saiu != null}">Você saiu do sistema.</p>
+
+    <form class="formulario" th:action="@{/login}" method="post">
+        <div class="campo">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="username" autocomplete="username" autofocus required>
+        </div>
+        <div class="campo">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
+        </div>
+        <button class="botao primario" type="submit">Entrar</button>
+    </form>
+</main>
+</body>
+</html>

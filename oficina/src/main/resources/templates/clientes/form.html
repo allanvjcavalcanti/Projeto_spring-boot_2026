@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Cliente')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('clientes')}"></header>
+
+<main class="conteudo">
+    <div class="cabecalho-pagina">
+        <h1 th:text="${cliente.id == null} ? 'Novo cliente' : 'Editar cliente'">Novo cliente</h1>
+    </div>
+
+    <form class="formulario" th:action="@{/clientes}" th:object="${cliente}" method="post" novalidate>
+        <input type="hidden" th:field="*{id}">
+
+        <p class="alerta erro" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Erro geral</p>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('nome')} ? 'invalido'">
+            <label for="nome">Nome completo</label>
+            <input type="text" th:field="*{nome}" maxlength="100" autocomplete="off">
+            <p class="erro-campo" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('cpf')} ? 'invalido'">
+            <label for="cpf">CPF</label>
+            <input type="text" th:field="*{cpf}" maxlength="14" inputmode="numeric" placeholder="000.000.000-00">
+            <p class="erro-campo" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('telefone')} ? 'invalido'">
+            <label for="telefone">Telefone</label>
+            <input type="text" th:field="*{telefone}" maxlength="20" inputmode="tel" placeholder="(81) 90000-0000">
+            <p class="erro-campo" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('email')} ? 'invalido'">
+            <label for="email">E-mail</label>
+            <input type="text" th:field="*{email}" maxlength="120" inputmode="email" placeholder="nome@exemplo.com">
+            <p class="erro-campo" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Erro</p>
+        </div>
+
+        <div class="linha-botoes">
+            <button class="botao primario" type="submit">Salvar cliente</button>
+            <a class="botao" th:href="@{/clientes}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

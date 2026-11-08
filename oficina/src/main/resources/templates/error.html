@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Erro')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('')}"></header>
+
+<main class="conteudo">
+    <h1>Algo deu errado</h1>
+    <p class="subtitulo">Não foi possível concluir a operação. Tente novamente ou volte ao painel.</p>
+    <p><a class="botao primario" th:href="@{/}">Voltar ao painel</a></p>
+</main>
+</body>
+</html>

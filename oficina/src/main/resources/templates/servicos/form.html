@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Serviço')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('servicos')}"></header>
+
+<main class="conteudo">
+    <div class="cabecalho-pagina">
+        <h1 th:text="${servico.id == null} ? 'Novo serviço' : 'Editar serviço'">Novo serviço</h1>
+    </div>
+
+    <form class="formulario" th:action="@{/servicos}" th:object="${servico}" method="post" novalidate>
+        <input type="hidden" th:field="*{id}">
+
+        <p class="alerta erro" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Erro geral</p>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('nome')} ? 'invalido'">
+            <label for="nome">Nome do serviço</label>
+            <input type="text" th:field="*{nome}" maxlength="80" autocomplete="off">
+            <p class="erro-campo" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('descricao')} ? 'invalido'">
+            <label for="descricao">Descrição</label>
+            <input type="text" th:field="*{descricao}" maxlength="255">
+            <p class="erro-campo" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('preco')} ? 'invalido'">
+            <label for="preco">Preço (R$)</label>
+            <input type="number" th:field="*{preco}" step="0.01" min="0.01" inputmode="decimal">
+            <p class="erro-campo" th:if="${#fields.hasErrors('preco')}" th:errors="*{preco}">Erro</p>
+        </div>
+
+        <div class="campo campo-check">
+            <label>
+                <input type="checkbox" th:field="*{ativo}">
+                Serviço ativo (aparece na hora de montar uma ordem)
+            </label>
+        </div>
+
+        <div class="linha-botoes">
+            <button class="botao primario" type="submit">Salvar serviço</button>
+            <a class="botao" th:href="@{/servicos}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

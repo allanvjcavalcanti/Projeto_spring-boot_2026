@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Ordem #' + ${ordem.id})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('ordens')}"></header>
+
+<main class="conteudo">
+    <div th:replace="~{fragments/layout :: mensagens}"></div>
+
+    <div class="cabecalho-pagina">
+        <div th:classappend="'st-' + ${ordem.status}">
+            <h1 th:text="'Ordem #' + ${ordem.id}">Ordem #1</h1>
+            <p class="subtitulo"><span class="selo" th:text="${ordem.status.rotulo}">Aberta</span></p>
+        </div>
+        <div class="acoes">
+            <th:block th:each="proximo : ${ordem.status.proximos()}">
+                <form th:if="${proximo.name() != 'CANCELADA'}"
+                      th:action="@{/ordens/{id}/status(id=${ordem.id})}" method="post"
+                      data-confirmar="Confirmar a mudança de status?">
+                    <input type="hidden" name="novo" th:value="${proximo}">
+                    <button type="submit" class="botao primario" th:text="${proximo.acao}">Ação</button>
+                </form>
+                <form th:if="${proximo.name() == 'CANCELADA' and ehGerente}"
+                      th:action="@{/ordens/{id}/cancelar(id=${ordem.id})}" method="post"
+                      data-confirmar="Cancelar esta ordem? Essa ação não pode ser desfeita.">
+                    <button type="submit" class="botao perigo" th:text="${proximo.acao}">Cancelar ordem</button>
+                </form>
+            </th:block>
+            <a class="botao" th:href="@{/ordens}">Voltar</a>
+        </div>
+    </div>
+
+    <section class="caixa">
+        <dl class="dados">
+            <div>
+                <dt>Veículo</dt>
+                <dd><a th:href="@{/veiculos/{id}(id=${ordem.veiculo.id})}" th:text="${ordem.veiculo.descricao}">ABC1D23 - Marca Modelo</a></dd>
+            </div>
+            <div>
+                <dt>Cliente</dt>
+                <dd><a th:href="@{/clientes/{id}(id=${ordem.veiculo.cliente.id})}" th:text="${ordem.veiculo.cliente.nome}">Cliente</a></dd>
+            </div>
+            <div>
+                <dt>Aberta em</dt>
+                <dd th:text="${#temporals.format(ordem.dataAbertura, 'dd/MM/yyyy HH:mm')}">01/01/2026 08:00</dd>
+            </div>
+            <div th:if="${ordem.dataConclusao != null}">
+                <dt>Concluída em</dt>
+                <dd th:text="${#temporals.format(ordem.dataConclusao, 'dd/MM/yyyy HH:mm')}">01/01/2026 17:00</dd>
+            </div>
+        </dl>
+        <p><strong>Problema relatado:</strong> <span th:text="${ordem.descricaoProblema}">Descrição</span></p>
+    </section>
+
+    <h2>Serviços da ordem</h2>
+
+    <p class="vazio" th:if="${ordem.itens.isEmpty()}">Nenhum serviço lançado ainda.</p>
+
+    <div class="tabela-caixa" th:unless="${ordem.itens.isEmpty()}">
+        <table class="tabela">
+            <thead>
+            <tr>
+                <th>Serviço</th>
+                <th class="num">Qtd.</th>
+                <th class="num">Preço unitário</th>
+                <th class="num">Subtotal</th>
+                <th th:if="${ordem.status.editavel}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${ordem.itens}">
+                <td data-label="Serviço" th:text="${item.servico.nome}">Serviço</td>
+                <td data-label="Qtd." class="num" th:text="${item.quantidade}">1</td>
+                <td data-label="Preço unitário" class="num" th:text="'R$ ' + ${#numbers.formatDecimal(item.precoUnitario, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                <td data-label="Subtotal" class="num" th:text="'R$ ' + ${#numbers.formatDecimal(item.subtotal, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                <td class="acoes" th:if="${ordem.status.editavel}">
+                    <form th:action="@{/ordens/{id}/itens/{itemId}/remover(id=${ordem.id}, itemId=${item.id})}" method="post">
+                        <button class="botao pequeno perigo" type="submit">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="3">Total</td>
+                <td class="num" th:text="'R$ ' + ${#numbers.formatDecimal(ordem.total, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <section class="caixa" th:if="${ordem.status.editavel}">
+        <h2>Adicionar serviço</h2>
+        <p class="vazio" th:if="${servicos.isEmpty()}">
+            Não há serviços ativos no catálogo. <a th:href="@{/servicos/novo}">Cadastrar serviço</a>
+        </p>
+
+        <form th:action="@{/ordens/{id}/itens(id=${ordem.id})}" th:object="${itemForm}" method="post" novalidate
+              th:unless="${servicos.isEmpty()}">
+            <p class="alerta erro" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Erro geral</p>
+
+            <div class="form-item">
+                <div class="campo" th:classappend="${#fields.hasErrors('servicoId')} ? 'invalido'">
+                    <label for="servicoId">Serviço</label>
+                    <select th:field="*{servicoId}">
+                        <option value="">Selecione um serviço</option>
+                        <option th:each="s : ${servicos}" th:value="${s.id}"
+                                th:text="${s.nome + ' - R$ ' + #numbers.formatDecimal(s.preco, 1, 'POINT', 2, 'COMMA')}">Serviço - R$ 0,00</option>
+                    </select>
+                    <p class="erro-campo" th:if="${#fields.hasErrors('servicoId')}" th:errors="*{servicoId}">Erro</p>
+                </div>
+
+                <div class="campo" th:classappend="${#fields.hasErrors('quantidade')} ? 'invalido'">
+                    <label for="quantidade">Quantidade</label>
+                    <input type="number" th:field="*{quantidade}" min="1" max="99">
+                    <p class="erro-campo" th:if="${#fields.hasErrors('quantidade')}" th:errors="*{quantidade}">Erro</p>
+                </div>
+
+                <button class="botao primario" type="submit">Adicionar</button>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

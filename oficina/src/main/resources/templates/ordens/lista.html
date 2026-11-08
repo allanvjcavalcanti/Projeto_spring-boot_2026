@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Ordens de serviço')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('ordens')}"></header>
+
+<main class="conteudo">
+    <div th:replace="~{fragments/layout :: mensagens}"></div>
+
+    <div class="cabecalho-pagina">
+        <h1>Ordens de serviço</h1>
+        <a class="botao primario" th:href="@{/ordens/nova}">Abrir ordem</a>
+    </div>
+
+    <nav class="filtros" aria-label="Filtrar por status">
+        <a th:href="@{/ordens}" th:classappend="${filtro == null} ? 'ativo'">Todas</a>
+        <a th:each="s : ${todosStatus}"
+           th:href="@{/ordens(status=${s})}"
+           th:classappend="${filtro == s} ? 'ativo'"
+           th:text="${s.rotulo}">Status</a>
+    </nav>
+
+    <p class="vazio" th:if="${ordens.isEmpty()}">Nenhuma ordem de serviço encontrada com este filtro.</p>
+
+    <div class="tabela-caixa" th:unless="${ordens.isEmpty()}">
+        <table class="tabela">
+            <thead>
+            <tr>
+                <th>Ordem</th>
+                <th>Veículo</th>
+                <th>Cliente</th>
+                <th>Abertura</th>
+                <th>Status</th>
+                <th class="num">Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${ordens}" th:classappend="'st-' + ${o.status}">
+                <td data-label="Ordem"><a th:href="@{/ordens/{id}(id=${o.id})}" th:text="'#' + ${o.id}">#1</a></td>
+                <td data-label="Veículo" th:text="${o.veiculo.placa} + ' ' + ${o.veiculo.modelo}">ABC1D23 Onix</td>
+                <td data-label="Cliente" th:text="${o.veiculo.cliente.nome}">Cliente</td>
+                <td data-label="Abertura" th:text="${#temporals.format(o.dataAbertura, 'dd/MM/yyyy HH:mm')}">01/01/2026 08:00</td>
+                <td data-label="Status"><span class="selo" th:text="${o.status.rotulo}">Aberta</span></td>
+                <td data-label="Total" class="num" th:text="'R$ ' + ${#numbers.formatDecimal(o.total, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

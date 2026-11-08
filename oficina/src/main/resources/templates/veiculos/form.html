@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Veículo')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('veiculos')}"></header>
+
+<main class="conteudo">
+    <div class="cabecalho-pagina">
+        <h1 th:text="${form.id == null} ? 'Novo veículo' : 'Editar veículo'">Novo veículo</h1>
+    </div>
+
+    <p class="vazio" th:if="${clientes.isEmpty()}">
+        Para cadastrar um veículo é preciso ter pelo menos um cliente.
+        <a th:href="@{/clientes/novo}">Cadastrar um cliente</a>
+    </p>
+
+    <form class="formulario" th:action="@{/veiculos}" th:object="${form}" method="post" novalidate
+          th:unless="${clientes.isEmpty()}">
+        <input type="hidden" th:field="*{id}">
+
+        <p class="alerta erro" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Erro geral</p>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('clienteId')} ? 'invalido'">
+            <label for="clienteId">Dono do veículo</label>
+            <select th:field="*{clienteId}">
+                <option value="">Selecione um cliente</option>
+                <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}">Cliente</option>
+            </select>
+            <p class="erro-campo" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('placa')} ? 'invalido'">
+            <label for="placa">Placa</label>
+            <input type="text" th:field="*{placa}" maxlength="8" autocomplete="off" placeholder="ABC1D23">
+            <span class="ajuda">Aceita o padrão antigo (ABC-1234) e o Mercosul (ABC1D23).</span>
+            <p class="erro-campo" th:if="${#fields.hasErrors('placa')}" th:errors="*{placa}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('marca')} ? 'invalido'">
+            <label for="marca">Marca</label>
+            <input type="text" th:field="*{marca}" maxlength="50">
+            <p class="erro-campo" th:if="${#fields.hasErrors('marca')}" th:errors="*{marca}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('modelo')} ? 'invalido'">
+            <label for="modelo">Modelo</label>
+            <input type="text" th:field="*{modelo}" maxlength="50">
+            <p class="erro-campo" th:if="${#fields.hasErrors('modelo')}" th:errors="*{modelo}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('ano')} ? 'invalido'">
+            <label for="ano">Ano</label>
+            <input type="number" th:field="*{ano}" min="1950" max="2100">
+            <p class="erro-campo" th:if="${#fields.hasErrors('ano')}" th:errors="*{ano}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('cor')} ? 'invalido'">
+            <label for="cor">Cor</label>
+            <input type="text" th:field="*{cor}" maxlength="30">
+            <p class="erro-campo" th:if="${#fields.hasErrors('cor')}" th:errors="*{cor}">Erro</p>
+        </div>
+
+        <div class="linha-botoes">
+            <button class="botao primario" type="submit">Salvar veículo</button>
+            <a class="botao" th:href="@{/veiculos}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

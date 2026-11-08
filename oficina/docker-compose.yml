@@ -1,0 +1,16 @@
+# Banco PostgreSQL opcional (perfil "postgres" da aplicação)
+services:
+  postgres:
+    image: postgres:16
+    container_name: oficina-postgres
+    environment:
+      POSTGRES_DB: oficina
+      POSTGRES_USER: oficina
+      POSTGRES_PASSWORD: oficina
+    ports:
+      - "5432:5432"
+    volumes:
+      - oficina-dados:/var/lib/postgresql/data
+
+volumes:
+  oficina-dados:

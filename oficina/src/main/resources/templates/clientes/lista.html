@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Clientes')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('clientes')}"></header>
+
+<main class="conteudo">
+    <div th:replace="~{fragments/layout :: mensagens}"></div>
+
+    <div class="cabecalho-pagina">
+        <h1>Clientes</h1>
+        <a class="botao primario" th:href="@{/clientes/novo}">Novo cliente</a>
+    </div>
+
+    <form class="busca" th:action="@{/clientes}" method="get" role="search">
+        <label class="so-leitor" for="busca">Buscar cliente por nome</label>
+        <input type="search" id="busca" name="busca" th:value="${busca}" placeholder="Buscar por nome">
+        <button class="botao" type="submit">Buscar</button>
+        <a th:if="${busca != null and !busca.isBlank()}" th:href="@{/clientes}">Limpar busca</a>
+    </form>
+
+    <p class="vazio" th:if="${clientes.isEmpty()}">
+        Nenhum cliente encontrado.
+        <a th:href="@{/clientes/novo}">Cadastrar um cliente</a>
+    </p>
+
+    <div class="tabela-caixa" th:unless="${clientes.isEmpty()}">
+        <table class="tabela">
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Telefone</th>
+                <th>E-mail</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${clientes}">
+                <td data-label="Nome"><a th:href="@{/clientes/{id}(id=${c.id})}" th:text="${c.nome}">Nome</a></td>
+                <td data-label="CPF" th:text="${c.cpfFormatado}">000.000.000-00</td>
+                <td data-label="Telefone" th:text="${c.telefone != null} ? ${c.telefone} : '-'">-</td>
+                <td data-label="E-mail" th:text="${c.email != null} ? ${c.email} : '-'">-</td>
+                <td class="acoes">
+                    <a class="botao pequeno" th:href="@{/clientes/{id}/editar(id=${c.id})}">Editar</a>
+                    <form th:if="${ehGerente}" th:action="@{/clientes/{id}/excluir(id=${c.id})}" method="post"
+                          data-confirmar="Excluir este cliente?">
+                        <button class="botao pequeno perigo" type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Nova ordem')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('ordens')}"></header>
+
+<main class="conteudo">
+    <div class="cabecalho-pagina">
+        <h1>Abrir ordem de serviço</h1>
+    </div>
+
+    <p class="vazio" th:if="${veiculos.isEmpty()}">
+        Cadastre um veículo antes de abrir uma ordem.
+        <a th:href="@{/veiculos/novo}">Cadastrar veículo</a>
+    </p>
+
+    <form class="formulario" th:action="@{/ordens}" th:object="${form}" method="post" novalidate
+          th:unless="${veiculos.isEmpty()}">
+
+        <p class="alerta erro" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Erro geral</p>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('veiculoId')} ? 'invalido'">
+            <label for="veiculoId">Veículo</label>
+            <select th:field="*{veiculoId}">
+                <option value="">Selecione um veículo</option>
+                <option th:each="v : ${veiculos}" th:value="${v.id}"
+                        th:text="${v.descricao} + ' (' + ${v.cliente.nome} + ')'">ABC1D23 - Marca Modelo (Cliente)</option>
+            </select>
+            <p class="erro-campo" th:if="${#fields.hasErrors('veiculoId')}" th:errors="*{veiculoId}">Erro</p>
+        </div>
+
+        <div class="campo" th:classappend="${#fields.hasErrors('descricaoProblema')} ? 'invalido'">
+            <label for="descricaoProblema">Problema relatado pelo cliente</label>
+            <textarea th:field="*{descricaoProblema}" maxlength="500"></textarea>
+            <p class="erro-campo" th:if="${#fields.hasErrors('descricaoProblema')}" th:errors="*{descricaoProblema}">Erro</p>
+        </div>
+
+        <div class="linha-botoes">
+            <button class="botao primario" type="submit">Abrir ordem</button>
+            <a class="botao" th:href="@{/ordens}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

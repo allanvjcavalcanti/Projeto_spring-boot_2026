@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho(${veiculo.placa})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('veiculos')}"></header>
+
+<main class="conteudo">
+    <div th:replace="~{fragments/layout :: mensagens}"></div>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1 th:text="${veiculo.placa}">ABC1D23</h1>
+            <p class="subtitulo" th:text="${veiculo.marca} + ' ' + ${veiculo.modelo} + ' ' + ${veiculo.ano}">Marca Modelo 2020</p>
+        </div>
+        <div class="acoes">
+            <a class="botao primario" th:href="@{/ordens/nova(veiculoId=${veiculo.id})}">Abrir ordem</a>
+            <a class="botao" th:href="@{/veiculos/{id}/editar(id=${veiculo.id})}">Editar</a>
+            <a class="botao" th:href="@{/veiculos}">Voltar</a>
+        </div>
+    </div>
+
+    <section class="caixa">
+        <dl class="dados">
+            <div>
+                <dt>Dono</dt>
+                <dd><a th:href="@{/clientes/{id}(id=${veiculo.cliente.id})}" th:text="${veiculo.cliente.nome}">Dono</a></dd>
+            </div>
+            <div><dt>Cor</dt><dd th:text="${veiculo.cor != null} ? ${veiculo.cor} : '-'">-</dd></div>
+        </dl>
+    </section>
+
+    <h2>Histórico de ordens</h2>
+    <p class="vazio" th:if="${ordens.isEmpty()}">Este veículo ainda não passou pela oficina.</p>
+
+    <div class="tabela-caixa" th:unless="${ordens.isEmpty()}">
+        <table class="tabela">
+            <thead>
+            <tr>
+                <th>Ordem</th>
+                <th>Abertura</th>
+                <th>Problema relatado</th>
+                <th>Status</th>
+                <th class="num">Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${ordens}" th:classappend="'st-' + ${o.status}">
+                <td data-label="Ordem"><a th:href="@{/ordens/{id}(id=${o.id})}" th:text="'#' + ${o.id}">#1</a></td>
+                <td data-label="Abertura" th:text="${#temporals.format(o.dataAbertura, 'dd/MM/yyyy HH:mm')}">01/01/2026 08:00</td>
+                <td data-label="Problema" th:text="${o.descricaoProblema}">Problema</td>
+                <td data-label="Status"><span class="selo" th:text="${o.status.rotulo}">Aberta</span></td>
+                <td data-label="Total" class="num" th:text="'R$ ' + ${#numbers.formatDecimal(o.total, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

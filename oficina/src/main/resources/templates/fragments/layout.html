@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="cabecalho(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' - OficinaFácil'">OficinaFácil</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+
+<!-- Menu: o parâmetro "ativo" diz qual link fica destacado -->
+<header class="topo" th:fragment="menu(ativo)">
+    <a class="marca" th:href="@{/}">Oficina<strong>Fácil</strong></a>
+    <nav aria-label="Principal">
+        <a th:href="@{/}" th:classappend="${ativo == 'painel'} ? 'ativo'">Painel</a>
+        <a th:href="@{/ordens}" th:classappend="${ativo == 'ordens'} ? 'ativo'">Ordens de serviço</a>
+        <a th:href="@{/clientes}" th:classappend="${ativo == 'clientes'} ? 'ativo'">Clientes</a>
+        <a th:href="@{/veiculos}" th:classappend="${ativo == 'veiculos'} ? 'ativo'">Veículos</a>
+        <a th:if="${ehGerente}" th:href="@{/servicos}" th:classappend="${ativo == 'servicos'} ? 'ativo'">Serviços</a>
+    </nav>
+    <form class="sair" th:if="${usuarioLogado != null}" th:action="@{/logout}" method="post">
+        <span class="usuario" th:text="${usuarioLogado}">usuário</span>
+        <button class="botao pequeno" type="submit">Sair</button>
+    </form>
+</header>
+
+<!-- Mensagens de sucesso/erro enviadas pelos controllers (flash attributes) -->
+<div th:fragment="mensagens">
+    <p class="alerta sucesso" role="status" th:if="${sucesso}" th:text="${sucesso}">Salvo com sucesso</p>
+    <p class="alerta erro" role="alert" th:if="${erro}" th:text="${erro}">Algo deu errado</p>
+</div>
+
+</body>
+</html>

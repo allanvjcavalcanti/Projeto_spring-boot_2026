@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: cabecalho('Painel')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: menu('painel')}"></header>
+
+<main class="conteudo">
+    <div th:replace="~{fragments/layout :: mensagens}"></div>
+
+    <div class="cabecalho-pagina">
+        <div>
+            <h1>Painel da oficina</h1>
+            <p class="subtitulo">Situação atual das ordens de serviço</p>
+        </div>
+        <a class="botao primario" th:href="@{/ordens/nova}">Abrir ordem de serviço</a>
+    </div>
+
+    <div class="tiles">
+        <a class="tile" th:each="e : ${porStatus}"
+           th:classappend="'st-' + ${e.key}"
+           th:href="@{/ordens(status=${e.key})}">
+            <span class="numero" th:text="${e.value}">0</span>
+            <span class="rotulo" th:text="${e.key.rotulo}">Status</span>
+        </a>
+    </div>
+
+    <div class="resumo">
+        <div class="caixa" th:if="${faturamento != null}">
+            <span class="valor" th:text="'R$ ' + ${#numbers.formatDecimal(faturamento, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</span>
+            <span class="rotulo">faturado em ordens concluídas</span>
+        </div>
+        <div class="caixa">
+            <span class="valor" th:text="${totalClientes}">0</span>
+            <span class="rotulo">clientes cadastrados</span>
+        </div>
+        <div class="caixa">
+            <span class="valor" th:text="${totalVeiculos}">0</span>
+            <span class="rotulo">veículos cadastrados</span>
+        </div>
+    </div>
+
+    <div class="duas-colunas">
+        <section>
+            <h2>Últimas ordens</h2>
+            <p class="vazio" th:if="${ultimas.isEmpty()}">Nenhuma ordem aberta ainda.</p>
+            <div class="tabela-caixa" th:unless="${ultimas.isEmpty()}">
+                <table class="tabela">
+                    <thead>
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Veículo</th>
+                        <th>Cliente</th>
+                        <th>Status</th>
+                        <th class="num">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="o : ${ultimas}" th:classappend="'st-' + ${o.status}">
+                        <td data-label="Ordem"><a th:href="@{/ordens/{id}(id=${o.id})}" th:text="'#' + ${o.id}">#1</a></td>
+                        <td data-label="Veículo" th:text="${o.veiculo.placa} + ' ' + ${o.veiculo.modelo}">ABC1D23 Onix</td>
+                        <td data-label="Cliente" th:text="${o.veiculo.cliente.nome}">Cliente</td>
+                        <td data-label="Status"><span class="selo" th:text="${o.status.rotulo}">Aberta</span></td>
+                        <td data-label="Total" class="num" th:text="'R$ ' + ${#numbers.formatDecimal(o.total, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Serviços mais pedidos</h2>
+            <div class="caixa">
+                <p class="subtitulo" th:if="${ranking.isEmpty()}">Ainda não há serviços lançados em ordens.</p>
+                <ol class="ranking" th:unless="${ranking.isEmpty()}">
+                    <li th:each="r : ${ranking}">
+                        <span th:text="${r.nome}">Serviço</span>
+                        <strong th:text="${r.quantidade} + 'x'">1x</strong>
+                    </li>
+                </ol>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
+</html>
