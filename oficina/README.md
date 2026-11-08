@@ -49,7 +49,7 @@ adaptável (computador e celular) e a persistência é feita com JPA/Hibernate.
 
 ## Como rodar no VS Code
 
-### 1. Instale o que precisa (uma vez só)
+### 1. Instale o que precisa 
 
 - **JDK 17 ou mais novo** (Temurin 17 ou 21 funcionam bem). Confira no terminal: `java -version`.
 - **VS Code** e a extensão **Extension Pack for Java** (da Microsoft). Opcional, mas útil: **Spring Boot Extension Pack**.
